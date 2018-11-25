@@ -1,0 +1,38 @@
+Jorge Velez - 3512474
+Steven Caceres - 3646027
+
+FILESYSTEM IMPLEMENTATION SHARED LIBRARY
+
+Compiling: 
+	To compile LibFS, we must first compile LibDisk. To do this, run:
+	
+		$ make libDisk.so
+		
+	To complile LibFS, in the directory where LibFS.c is located, run the following:
+	
+		$ make libFS.so
+			
+	To compile the included test programs with LibFS and LibDisk, run:
+	
+		$ make 
+		
+			
+Set environment variables:
+	Before running a program, you must add the shared library to your LD_LIBRARY_PATH/
+	To do this run:
+	
+		$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
+		
+Running a program:
+	To link with this library, you simply specify the base name of the library with "-lDisk" and "-lFS" and the path
+	to find the library "-L." (the current directory). To do this, run:
+	
+		gcc example.c -lDisk -lFS -L. -o example_name
+		
+Cleaning:
+	To clean the shared library files, run the following series of commands:
+	
+		$ make reset
+		$ make clean
+		
+
