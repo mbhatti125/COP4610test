@@ -255,7 +255,36 @@ static int bitmap_reset(int start, int num, int ibit)
 // should not be more than MAX_NAME-1 in length
 static int illegal_filename(char* name)
 {
-  /* YOUR CODE */
+  const char *invalid_characters = "!@#$^&* &";
+   
+    int offset = 0;
+    //variable that counts the number of elements in your array
+    int count = 0;
+   char *mystring = name;
+   char *c = mystring;
+   int z=0;
+   while(*(name + offset) != '\0'){
+       
+       //increment the count variable
+        ++count;
+        //advance to the next element of the array
+        ++offset;
+        if(count >=MAX_NAME-1){
+            return 1;
+        }
+   }
+   while (*name)
+   {
+      if (strchr(invalid_characters, *name))
+       {
+           return 1;
+
+       }
+       
+       name++;
+       z++;
+   }
+   return 0;
   return 1; 
 }
 
