@@ -805,3 +805,17 @@ int Dir_Read(char* path, void* buffer, int size)
   /* YOUR CODE */
   return -1;
 }
+int ipow(int base, int exp) {
+    int result = 1;
+    for (;;) //unconditional for-loop
+    {
+        if (exp & 1)
+            result *= base;
+        exp >>= 1;
+        if (!exp)
+            break;
+        base *= base;
+    }
+    return result;
+}
+
