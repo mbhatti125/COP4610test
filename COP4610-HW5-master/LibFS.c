@@ -326,7 +326,8 @@ static int find_child_inode(int parent_inode, char* fname,
   while(nentries > 0) {
     char buf[SECTOR_SIZE]; // cached content of directory entries
     if(Disk_Read(parent->data[idx], buf) < 0) return -2;
-    for(int i=0; i<DIRENTS_PER_SECTOR; i++) {
+	  int i;
+    for(i=0; i<DIRENTS_PER_SECTOR; i++) {
       if(i>nentries) break;
       if(!strcmp(((dirent_t*)buf)[i].fname, fname)) {
 	// found the file/directory; update inode cache
@@ -614,7 +615,8 @@ static open_file_t open_files[MAX_OPEN_FILES];
 // return true if the file pointed to by inode has already been open
 int is_file_open(int inode)
 {
-  for(int i=0; i<MAX_OPEN_FILES; i++) {
+	int i;
+  for( i=0; i<MAX_OPEN_FILES; i++) {
     if(open_files[i].inode == inode)
       return 1;
   }
@@ -624,7 +626,8 @@ int is_file_open(int inode)
 // return a new file descriptor not used; -1 if full
 int new_file_fd()
 {
-  for(int i=0; i<MAX_OPEN_FILES; i++) {
+	int i;
+  for(i=0; i<MAX_OPEN_FILES; i++) {
     if(open_files[i].inode <= 0)
       return i;
   }
@@ -682,7 +685,8 @@ int FS_Boot(char* backstore_fname)
 	     (int)SECTOR_BITMAP_START_SECTOR, (int)SECTOR_BITMAP_SECTORS);
       
       // format inode tables
-      for(int i=0; i<INODE_TABLE_SECTORS; i++) {
+	    int i;
+      for( i=0; i<INODE_TABLE_SECTORS; i++) {
 	memset(buf, 0, SECTOR_SIZE);
 	if(i==0) {
 	  // the first inode table entry is the root directory
