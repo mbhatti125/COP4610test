@@ -118,6 +118,40 @@ static int check_magic()
 static void bitmap_init(int start, int num, int nbits)
 {
   /* YOUR CODE */
+  
+  char bitmap[SECTOR_SIZE];
+  
+  int i; int bcount =0;// number of bits in the bitmap which could be over in anotgher sector
+  
+  for(i = 0; i < num; i++){//traverse sectors
+  
+	//num is number of sectors 
+	//reset buffer
+	
+	memset(bitmap, 0, SECTOR_SIZE);
+	
+	//set the first nbits .
+	
+	int j=0;//number bits in the sector
+	
+	while(bcount < nbits ){
+		//less than n bits 
+		int bmapIndex = j/8; 
+		int shift_index = j%8;
+		
+		
+		if ( j < (SECTOR_SIZE*8)){//less than sector bits 
+			//setbits to 1
+			bitmap[bmapIndex] |= (1 << shift_index); 
+				j++; 
+		}//end if 
+	
+		bcount++;
+	}//endwhile 
+	  
+	  Disk_Write(start+i, bitmap); //write to disk sector
+	  
+  }//end of sector for 
 }
 
 // set the first unused bit from a bitmap of 'nbits' bits (flip the
@@ -126,6 +160,40 @@ static void bitmap_init(int start, int num, int nbits)
 static int bitmap_first_unused(int start, int num, int nbits)
 {
   /* YOUR CODE */
+   char bitmap[SECTOR_SIZE];
+  
+  int i; int bcount =0;
+  
+  for(i = 0; i < num; i++){//traverse sectors
+  
+	//num is number of sectors
+	
+	Disk_Read(start+i, bitmap); //read disk sector 
+	
+	int j=0;
+	// 
+	while(bcount < nbits ){
+		//less than n bits 
+		int bmapIndex = j/8; 
+		int shift_index = j%8;
+		
+		// if 0 then set bit and return location 
+		if ( j < (SECTOR_SIZE*8)){//less than sector bits 
+		if (!(bitmap[bmapIndex] & (1 << shift_index))){
+			//setbit to 1
+			bitmap[bmapIndex] |= (1 << shift_index); 
+			return bmapIndex; //return location 
+		}
+		j++;
+		}//end of if sector size*8
+		bcount++;
+	}//endwhile 
+	  
+	  
+	  
+  }//end of sector for 
+  
+  
   return -1;
 }
 
@@ -134,6 +202,50 @@ static int bitmap_first_unused(int start, int num, int nbits)
 static int bitmap_reset(int start, int num, int ibit)
 {
   /* YOUR CODE */
+  
+   char bitmap[SECTOR_SIZE];
+  
+  int i; int bcount =0;
+  
+  for(i = 0; i < num; i++){//traverse sectors
+  
+	//num is number of sectors
+	int j =0;
+	Disk_Read(start+i, bitmap); //read disk sector 
+	
+	for( j = 0; j < (SECTOR_SIZE*8); j++){//traverse each bit 
+	
+		int bmapIndex = j/8; 
+		int shift_index = j%8;
+	
+		if (bcount == ibit){// then clear bit 
+		//clear bit 
+		bitmap[bmapIndex] &= ~(1 << shift_index); //clear bit 
+		return 0;
+		}//end of if bit count === ith 
+		
+		bcount++;
+		j++;
+	
+	}//end of for 
+	
+
+
+		/* //less than n bits 
+		int bmapIndex = 0;// bcount/8; 
+		int shift_index = 0;// bcount%8;
+		
+		bmapIndex = ibit/8;
+		shift_index = ibit%8;
+		
+		// reset the ith bit 
+		
+		//resetbit to 0
+		bitmap[bmapIndex] &= ~(1 << shift_index); //clear bit 
+		eturn 0; //successss */
+	
+  }//end of sector for 
+  
   return -1;
 }
 
@@ -174,7 +286,7 @@ static int find_child_inode(int parent_inode, char* fname,
   while(nentries > 0) {
     char buf[SECTOR_SIZE]; // cached content of directory entries
     if(Disk_Read(parent->data[idx], buf) < 0) return -2;
-	  int i=0;
+	int i;
     for( i=0; i<DIRENTS_PER_SECTOR; i++) {
       if(i>nentries) break;
       if(!strcmp(((dirent_t*)buf)[i].fname, fname)) {
@@ -235,10 +347,10 @@ static int follow_path(char* path, int* last_inode, char* last_fname)
   while((token = strsep(&lpath, "/")) != NULL) {
     dprintf("... process token: '%s'\n", token);
     if(*token == '\0') continue; // multiple '/' ignored
-    if(illegal_filename(token)) {
-      dprintf("... illegal file name: '%s'\n", token);
+    /* if(illegal_filename(token)) {
+      printf("... illegal file name: '%s'\n", token);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       return -1; 
-    }
+    } */
     if(child_inode < 0) {
       // regardless whether child_inode was not found previously, or
       // there was issues related to the parent (say, not a
@@ -307,14 +419,16 @@ int add_inode(int type, int parent_inode, char* file)
   offset = parent_inode-inode_start_entry;
   assert(0 <= offset && offset < INODES_PER_SECTOR);
   inode_t* parent = (inode_t*)(inode_buffer+offset*sizeof(inode_t));
-  dprintf("... get parent inode %d (size=%d, type=%d)\n",
-	 parent_inode, parent->size, parent->type);
+  printf("... get parent inode %d (size=%d, type=%d)\n",
+  parent_inode, parent->size, parent->type);
+
 
   // get the dirent sector
   if(parent->type != 1) {
-    dprintf("... error: parent inode is not directory\n");
+    printf("... error: parent inode is not directory\n");
     return -2; // parent not directory
   }
+  //printf("Is after dirent\n");
   int group = parent->size/DIRENTS_PER_SECTOR;
   char dirent_buffer[SECTOR_SIZE];
   if(group*DIRENTS_PER_SECTOR == parent->size) {
@@ -332,7 +446,7 @@ int add_inode(int type, int parent_inode, char* file)
       return -1;
     dprintf("... load disk sector %d for dirent group %d\n", parent->data[group], group);
   }
-
+	 
   // add the dirent and write to disk
   int start_entry = group*DIRENTS_PER_SECTOR;
   offset = parent->size-start_entry;
@@ -362,9 +476,10 @@ int create_file_or_directory(int type, char* pathname)
     if(child_inode >= 0) {
       dprintf("... file/directory '%s' already exists, failed to create\n", pathname);
       osErrno = E_CREATE;
+	  
       return -1;
     } else {
-      if(add_inode(type, parent_inode, last_fname) >= 0) {
+     if(add_inode(type, parent_inode, last_fname) >= 0) {
 	dprintf("... successfully created file/directory: '%s'\n", pathname);
 	return 0;
       } else {
@@ -386,26 +501,6 @@ int create_file_or_directory(int type, char* pathname)
 int remove_inode(int type, int parent_inode, int child_inode)
 {
   /* YOUR CODE */
-    int sector = INODE_TABLE_START_SECTOR + child_inode/INODES_PER_SECTOR;
-    char buffer[SECTOR_SIZE];
-    int start = (sector-INODE_TABLE_START_SECTOR)*INODES_PER_SECTOR;
-    int offset = child_inode-start;
-	printf("remove_inode");
-    assert(0<=offset&&offset<INODES_PER_SECTOR);
-    inode_t* child = (inode_t*)(buffer+offset*sizeof(inode_t));
-    
-    int i;
-    for(i =0; i < MAX_SECTORS_PER_FILE; i++){
-        if(child->data[i]){
-	    printf("removing child data");
-            char buf[SECTOR_SIZE];
-            bitmap_reset(SECTOR_BITMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
-            Disk_Read(child->data[i],buf);
-            memset(buf,0,SECTOR_SIZE);
-            Disk_Write(child->data[i],buf);
-        }
-    }
-
   return -1;
 }
 
@@ -420,7 +515,7 @@ static open_file_t open_files[MAX_OPEN_FILES];
 // return true if the file pointed to by inode has already been open
 int is_file_open(int inode)
 {
-	int i = 0;
+	int i;
   for( i=0; i<MAX_OPEN_FILES; i++) {
     if(open_files[i].inode == inode)
       return 1;
@@ -431,8 +526,8 @@ int is_file_open(int inode)
 // return a new file descriptor not used; -1 if full
 int new_file_fd()
 {
-	int i = 0;
-  for(i=0; i<MAX_OPEN_FILES; i++) {
+	int i;
+  for( i=0; i<MAX_OPEN_FILES; i++) {
     if(open_files[i].inode <= 0)
       return i;
   }
@@ -451,6 +546,7 @@ int FS_Boot(char* backstore_fname)
     return -1;
   }
   dprintf("... disk initialized\n");
+  //printf("");
   
   // we should copy the filename down; if not, the user may change the
   // content pointed to by 'backstore_fname' after calling this function
@@ -490,8 +586,8 @@ int FS_Boot(char* backstore_fname)
 	     (int)SECTOR_BITMAP_START_SECTOR, (int)SECTOR_BITMAP_SECTORS);
       
       // format inode tables
-	    int i = 0;
-      for(i=0; i<INODE_TABLE_SECTORS; i++) {
+	  int i;
+      for( i=0; i<INODE_TABLE_SECTORS; i++) {
 	memset(buf, 0, SECTOR_SIZE);
 	if(i==0) {
 	  // the first inode table entry is the root directory
