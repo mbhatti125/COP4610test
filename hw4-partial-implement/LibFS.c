@@ -401,7 +401,7 @@ int remove_inode(int type, int parent_inode, int child_inode)
             char buf[SECTOR_SIZE];
             bitmap_reset(SECTOR_BITMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
             Disk_Read(child->data[i],buf);
-            memeset(buf,0,SECTOR_SIZE);
+            memset(buf,0,SECTOR_SIZE);
             Disk_Write(child->data[i],buf);
         }
     }
