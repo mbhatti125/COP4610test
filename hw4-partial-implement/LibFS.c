@@ -530,9 +530,9 @@ int create_file_or_directory(int type, char* pathname)
 int remove_inode(int type, int parent_inode, int child_inode)
 {
   /* YOUR CODE */
-	int sector = INODE_TABLE_START_SECTOR + chukd_inode/INODES_PER_SECTOR;
+	int sector = INODE_TABLE_START_SECTOR + childd_inode/INODES_PER_SECTOR;
     char buffer[SECTOR_SIZE];
-    int start = (sector-INODE_TABLES_START_SECTOR)*INODES_PER_SECTOR;
+    int start = (sector-INODE_TABLE_START_SECTOR)*INODES_PER_SECTOR;
     int offset = child_inode-start;
 	printf("remove_inode");
     assert(0<=offset&&offset<INODES_PER_SECTOR);
@@ -543,7 +543,7 @@ int remove_inode(int type, int parent_inode, int child_inode)
         if(child->data[i]){
 	    printf("removing child data");
             char buf[SECTOR_SIZE];
-            bitmap_reset(SECTOR_BUTMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
+            bitmap_reset(SECTOR_BITMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
             memeset(buf,0,SECTOR_SIZE);
         }
     }
@@ -826,7 +826,7 @@ int Dir_Unlink(char* path)
   /* YOUR CODE */
 	int inode;
 	char fileName[MAX_NAME];
-	int parent= follow_path(path,%inode, fileName);
+	int parent= follow_path(path,&inode, fileName);
 	
 	
 	return remove_inode(0, parent,inode);
@@ -838,13 +838,13 @@ int Dir_Size(char* path)
   /* YOUR CODE */
 	int inode;
 	char fileName[MAX_NAME];
-	follow_path(path,%inode, fileName);
+	follow_path(path,&inode, fileName);
 	
 	// load child
 	int inode_sector = INODE_TABLE_START_SECTOR+inode/INODES_PER_SECTOR;
 	char buf[SECTOR_SIZE];
 	
-	assert(0 <= (inode-inode_start_entry) && (inode-inode_start_entry) < INODES_PER_SECTOR);
+	assert(0 <= (inode) && (inode) < INODES_PER_SECTOR);
 	
 	return dir->size*sizeof(dirent_t);
 }
@@ -863,7 +863,7 @@ int Dir_Read(char* path, void* buffer, int size)
 	
 	int i;
 	for(i = 0; i<MAX_SECTORS_PER_FILE; i++){
-		memcpy(buf+i, (void*)dirent, sizeof(dirent_t));
+		memcpy(buf+i, (void*)dirent_t, sizeof(dirent_t));
 	}
 	
   return -1;
