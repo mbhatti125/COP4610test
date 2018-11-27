@@ -544,7 +544,7 @@ int remove_inode(int type, int parent_inode, int child_inode)
 	    printf("removing child data");
             char buf[SECTOR_SIZE];
             bitmap_reset(SECTOR_BITMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
-            memeset(buf,0,SECTOR_SIZE);
+            memset(buf,0,SECTOR_SIZE);
         }
     }
 	bitmap_reset(INODE_BITMAP_START_SECTOR, INODE_BITMAP_SECTORS,child_inode);
