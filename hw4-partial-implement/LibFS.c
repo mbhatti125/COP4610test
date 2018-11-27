@@ -864,7 +864,7 @@ int Dir_Read(char* path, void* buffer, int size)
 	
 	int i;
 	for(i = 0; i<MAX_SECTORS_PER_FILE; i++){
-		memcpy(buf+i, (void*)dirent_t, sizeof(dirent_t));
+		memcpy(buf+i, (void*)inode, sizeof(dirent_t));
 	}
 	
   return -1;
