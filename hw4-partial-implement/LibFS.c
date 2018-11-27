@@ -530,7 +530,7 @@ int create_file_or_directory(int type, char* pathname)
 int remove_inode(int type, int parent_inode, int child_inode)
 {
   /* YOUR CODE */
-	int sector = INODE_TABLE_START_SECTOR + childd_inode/INODES_PER_SECTOR;
+	int sector = INODE_TABLE_START_SECTOR + child_inode/INODES_PER_SECTOR;
     char buffer[SECTOR_SIZE];
     int start = (sector-INODE_TABLE_START_SECTOR)*INODES_PER_SECTOR;
     int offset = child_inode-start;
@@ -846,6 +846,7 @@ int Dir_Size(char* path)
 	
 	assert(0 <= (inode) && (inode) < INODES_PER_SECTOR);
 	
+	inode_t * dir;
 	return dir->size*sizeof(dirent_t);
 }
 
