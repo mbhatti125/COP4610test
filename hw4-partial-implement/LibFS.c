@@ -530,27 +530,6 @@ int create_file_or_directory(int type, char* pathname)
 int remove_inode(int type, int parent_inode, int child_inode)
 {
   /* YOUR CODE */
-	int sector = INODE_TABLE_START_SECTOR + chukd_inode/INODES_PER_SECTOR;
-    char buffer[SECTOR_SIZE];
-    int start = (sector-INODE_TABLES_START_SECTOR)*INODES_PER_SECTOR;
-    int offset = child_inode-start;
-	printf("remove_inode");
-    assert(0<=offset&&offset<INODES_PER_SECTOR);
-    inode_t* child = (inode_t*)(offset*sizeof(inode_t));
-    
-    int i;
-    for(i =0; i < MAX_SECTORS_PER_FILE; i++){
-        if(child->data[i]){
-	    printf("removing child data");
-            char buf[SECTOR_SIZE];
-            bitmap_reset(SECTOR_BUTMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
-            Disk_Read(child->data[i],buf);
-            memeset(buf,0,SECTOR_SIZE);
-            Disk_Write(child->data[i],buf);
-        }
-    }
-
-  return -1;
   return -1;
 }
 
