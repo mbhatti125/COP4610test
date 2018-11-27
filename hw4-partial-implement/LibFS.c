@@ -544,13 +544,13 @@ int remove_inode(int type, int parent_inode, int child_inode)
 	    printf("removing child data");
             char buf[SECTOR_SIZE];
             bitmap_reset(SECTOR_BUTMAP_START_SECTOR, SECTOR_BITMAP_SECTORS,child->data[i]);
-            Disk_Read(child->data[i],buf);
             memeset(buf,0,SECTOR_SIZE);
-            Disk_Write(child->data[i],buf);
         }
     }
+	bitmap_reset(INODE_BITMAP_START_SECTOR, INODE_BITMAP_SECTORS,child_inode);
+	memset(child, 0, sizeof(inode_t)); // delete child inode
+	
 
-  return -1;
   return -1;
 }
 
