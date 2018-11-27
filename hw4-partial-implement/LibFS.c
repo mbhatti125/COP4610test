@@ -829,7 +829,7 @@ int Dir_Unlink(char* path)
 	int parent= follow_path(path,&inode, fileName);
 	
 	
-	return remove_inode(0, parent,inode);
+	//return remove_inode(0, parent,inode);
   return -1;
 }
 
@@ -847,7 +847,7 @@ int Dir_Size(char* path)
 	assert(0 <= (inode) && (inode) < INODES_PER_SECTOR);
 	
 	inode_t * dir;
-	return dir->size*sizeof(dirent_t);
+	//return dir->size*sizeof(dirent_t);
 }
 
 int Dir_Read(char* path, void* buffer, int size)
