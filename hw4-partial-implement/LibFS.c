@@ -866,6 +866,12 @@ int Dir_Read(char* path, void* buffer, int size)
 	for(i = 0; i<MAX_SECTORS_PER_FILE; i++){
 	//	memcpy(buf+i, (void*)inode, sizeof(dirent_t));
 	}
+		int inode_start_entry = (inode_sector-INODE_TABLE_START_SECTOR)*INODES_PER_SECTOR;
+	int offset = d_inode-inode_start_entry;
+		inode_t* dir = (inode_t*)(inode_buffer+offset*sizeof(inode_t));
+		return dir->size;
+
+
 	
   return -1;
 }
