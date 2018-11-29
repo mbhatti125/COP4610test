@@ -69,7 +69,7 @@ int pos,len;
   char *ret;//return of pointer to ;  //used to get index
   int index;
   for(i = 0; i < nargs; i++){
-    if (strcmp(args[i], ";")==0 || (ret = strchr(args[i], ';'))){
+    if (strcmp(args[i], ";")==0 || (ret = strchr(args[i], ';'))||strcmp(args[i], "|")==0 || (ret = strchr(args[i], '|'))){
 	cmds[cmdc] = i;
 	cmdc++;
  	index = (int) (ret-args[i]);
