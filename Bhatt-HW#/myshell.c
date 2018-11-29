@@ -92,7 +92,7 @@ int pos,len;
   }
 
   /* check if async call */
-  if(!strcmp(args[nargs-1], "&")) { async = 1; args[--nargs] = 0; }
+  if(!strcmp(args[nargs-1], "&")||!strcmp(args[nargs-1], "|")) { async = 1; args[--nargs] = 0; }
   else async = 0;
  
     
